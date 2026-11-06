@@ -59,7 +59,7 @@ async def create_session(session: StudySessionCreate):
     try:
         new_session = save_session(session)
         return new_session
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         logger.error(f"Error creating session: {e!s}")
         raise HTTPException(status_code=500, detail=f"Error creating session: {e!s}")
 
@@ -76,7 +76,7 @@ async def read_sessions(
         else:
             logger.info("Fetching all sessions")
             return get_all_sessions()
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         logger.error(f"Error fetching sessions: {e!s}")
         raise HTTPException(status_code=500, detail=f"Error fetching sessions: {e!s}")
 
@@ -87,7 +87,7 @@ async def read_stats():
     logger.info("Fetching statistics")
     try:
         return get_statistics()
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         logger.error(f"Error fetching statistics: {e!s}")
         raise HTTPException(status_code=500, detail=f"Error fetching statistics: {e!s}")
 
