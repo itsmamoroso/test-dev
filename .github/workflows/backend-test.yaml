@@ -1,19 +1,13 @@
-# name of the Github Action
 name: Backend Tests
 
-# the trigger of the github action
 on:
   pull_request:
 
-# what the github action is going to perfrom
 jobs:
   check_paths:
-# where is going to run
     runs-on: ubuntu-latest
-# what is going to output
     outputs:
       should_run: ${{ steps.filter.outputs.backend }}
-# what actions is going to execute
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3.0.2
@@ -24,30 +18,31 @@ jobs:
               - 'src/backend/**'
               - '.github/workflows/backend-tests.yaml'
 
-    test:
-      name: Test Backend
-      needs: check_paths
-      if: ${{ needs.check_paths.outputs.should_run == 'true' }}
-      runs-on: ubuntu-latest
-      defaults:
-        run:
-          working-directory: ./src/backend
+  test:
+    name: Test Backend
+    needs: check_paths
+    if: ${{ needs.check_paths.outputs.should_run == 'true' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./src/backend
 
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v4
-  
-        - name: Install UV
-          uses: astral-sh/setup-uv@v5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        - name: Setup Python
-          run: uv python install
+      - name: Install UV
+        uses: astral-sh/setup-uv@v5
 
-        - name: Install dependencies
-          run: |
-            uv sync --locked --dev
+      - name: Set up Python
+        run: uv python install
 
-        - name: Lint with Ruff
-          run: |
-            uv run ruff check --output-format=github --target-version=py314 src tests
-            uv run ruff format --diff --check --target-version=py314 src tests
+      - name: Install dependencies
+        run: |
+          uv sync --locked --dev
+
+      - name: Lint with Ruff
+        run: |
+          uv run ruff check --output-format=github --target-version=py314 src tests
+          uv run ruff format --diff --check --target-version=py314 src tests
+
