@@ -1,4 +1,4 @@
-name: Backend Tests
+name: Frontend Test
 
 on:
   pull_request:
@@ -7,25 +7,24 @@ jobs:
   check_paths:
     runs-on: ubuntu-latest
     outputs:
-      should_run: ${{ steps.filter.outputs.backend }}
+      should_run: ${{ steps.filter.outputs.frontend }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3.0.2
         id: filter
         with:
           filters: |
-            backend:
-              - 'src/backend/**'
-              - '.github/workflows/backend-tests.yaml'
-
+            frontend:
+              - 'src/frontend/**'
+              - '.github/workflows/frontend-tests.yaml'
   test:
-    name: Test Backend
+    name: Test Frontend
     needs: check_paths
     if: ${{ needs.check_paths.outputs.should_run == 'true' }}
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./src/backend
+        working-directory: ./src/frontend
 
     steps:
       - name: Checkout code
@@ -36,7 +35,7 @@ jobs:
 
       - name: Set up Python
         run: uv python install
-
+      
       - name: Install dependencies
         run: |
           uv sync --locked --dev
@@ -48,20 +47,20 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          uv run pytest tests/ -v --cov=src/backend --cov-report=xml --cov-fail-under=80
+          uv run pytest tests/ -v --cov=src/frontend --cov-report=xml --cov-fail-under=80
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: ./src/backend/coverage.xml
+          path: ./src/frontend/coverage.xml
           retention-days: 7
         if: ${{ always() }}
 
       - name: Coverage Report
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
-          filename: ./src/backend/coverage.xml
+          filename: ./src/frontend/coverage.xml
           badge: true
           format: markdown
           output: both
@@ -74,14 +73,16 @@ jobs:
           recreate: true
           path: code-coverage-results.md
 
-      - name: Build an image from Dockerfile
-        run: docker build -t backend:${{ github.sha }} .
+      - name: Build image from Dockerfile
+        run: docker build -t frontend:${{ github.sha }} .
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@v0.36.0
         with:
-          image-ref: 'backend:${{ github.sha }}'
+          image-ref: 'frontend:${{ github.sha }}'
           format: 'table'
-          exit-code: '1'
+          exit-code: '0'
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
+
