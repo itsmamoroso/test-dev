@@ -45,4 +45,17 @@ jobs:
         run: |
           uv run ruff check --output-format=github --target-version=py314 src tests
           uv run ruff format --diff --check --target-version=py314 src tests
+      
+      - name: Build an image from Dockerfile
+        run: docker build -t backend:${{ github.sha }} .
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: 'backend:${{ github.sha }}'
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
 

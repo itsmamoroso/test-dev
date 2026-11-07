@@ -10,10 +10,6 @@ requires-python = ">=3.13"
 dependencies = [
     "fastapi>=0.162.0",
     "httpx>=0.28.1",
-    "pytest>=9.2.0",
-    "pytest-asyncio>=1.4.1.post1",
-    "pytest-cov>=7.1.0",
-    "ruff>=0.17.4",
     "uvicorn>=0.54.0",
 ]
 
@@ -29,3 +25,11 @@ asyncio_default_fixture_loop_scope = "function"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "pytest-asyncio>=1.4.1.post1",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.17.4",
+]
