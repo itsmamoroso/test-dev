@@ -73,3 +73,16 @@ jobs:
           recreate: true
           path: code-coverage-results.md
 
+      - name: Build image from Dockerfile
+        run: docker build -t frontend:${{ github.sha }} .
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          iamge-ref: 'frontend:${{ github.sha }}'
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
