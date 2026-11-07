@@ -3,7 +3,6 @@ import json
 import requests
 import responses
 from conftest import captured_templates
-
 from frontend.main import app
 
 
