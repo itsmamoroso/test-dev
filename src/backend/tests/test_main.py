@@ -1,17 +1,18 @@
+import csv
+import os
+from unittest import mock
+
 import pytest
 import pytest_asyncio
 from httpx import AsyncClient
-import os
-import csv
-from unittest import mock
+
+# Import the storage module itself
+import backend.storage as storage_module
 
 # Import the FastAPI app and models from the proper package path
 from backend.main import app
 from backend.models import StudySessionCreate
 from backend.storage import save_session
-
-# Import the storage module itself
-import backend.storage as storage_module
 
 # Define the path for a temporary test data file using relative paths
 TEST_DATA_FILE = os.path.join(os.path.dirname(__file__), "test_sessions.csv")
@@ -78,7 +79,7 @@ async def test_create_session(client: AsyncClient):
     assert "timestamp" in data
 
     # Verify data was saved using CSV
-    with open(TEST_DATA_FILE, "r", newline="") as f:
+    with open(TEST_DATA_FILE, "r", newline="") as f:  # noqa: ASYNC230
         reader = list(csv.DictReader(f))
         assert len(reader) == 1
         assert int(reader[0]["minutes"]) == 30
@@ -177,7 +178,7 @@ async def test_error_handling_create_session(client: AsyncClient, monkeypatch):
 
     # Mock save_session to raise an exception
     def mock_save_session(*args, **kwargs):
-        raise Exception("Test error")
+        raise Exception("Test error")  # noqa: TRY002
 
     monkeypatch.setattr("backend.main.save_session", mock_save_session)
 
@@ -193,7 +194,7 @@ async def test_error_handling_read_sessions(client: AsyncClient, monkeypatch):
 
     # Mock get_all_sessions to raise an exception
     def mock_get_all_sessions(*args, **kwargs):
-        raise Exception("Test error")
+        raise Exception("Test error")  # noqa: TRY002
 
     monkeypatch.setattr("backend.main.get_all_sessions", mock_get_all_sessions)
 
@@ -208,7 +209,7 @@ async def test_error_handling_read_sessions_by_tag(client: AsyncClient, monkeypa
 
     # Mock get_sessions_by_tag to raise an exception
     def mock_get_sessions_by_tag(*args, **kwargs):
-        raise Exception("Test error")
+        raise Exception("Test error")  # noqa: TRY002
 
     monkeypatch.setattr("backend.main.get_sessions_by_tag", mock_get_sessions_by_tag)
 
@@ -223,7 +224,7 @@ async def test_error_handling_read_stats(client: AsyncClient, monkeypatch):
 
     # Mock get_statistics to raise an exception
     def mock_get_statistics(*args, **kwargs):
-        raise Exception("Test error")
+        raise Exception("Test error")  # noqa: TRY002
 
     monkeypatch.setattr("backend.main.get_statistics", mock_get_statistics)
 
